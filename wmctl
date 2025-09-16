@@ -1,0 +1,18 @@
+#!/bin/sh
+# wmctl - cliente simples de IPC para MyWM
+# Usa socat para mandar comandos para o socket UNIX do WM
+
+SOCK="${XDG_RUNTIME_DIR:-/tmp}/mywm.sock"
+
+if [ ! -S "$SOCK" ]; then
+  echo "wmctl: WM socket não encontrado em $SOCK" >&2
+  exit 1
+fi
+
+if [ $# -eq 0 ]; then
+  echo "Uso: wmctl <comando> [args...]"
+  exit 1
+fi
+
+# Envia comando como linha única
+printf "%s\n" "$*" | socat - UNIX-CONNECT:"$SOCK"
